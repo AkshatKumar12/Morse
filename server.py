@@ -10,7 +10,7 @@ from PyQt5.QtGui import QFont, QTextCursor
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QObject
 
 HOST = '0.0.0.0' # Listen on all available interfaces
-PORT = 8000
+PORT = 9999
 
 # Global dictionary to store connected clients: {username: socket_object}
 CONNECTED_CLIENTS = {}
