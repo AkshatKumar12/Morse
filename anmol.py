@@ -1,4 +1,5 @@
-# client.py
+# anmol.py (client.py)
+
 import sys
 import socket
 import threading
@@ -113,14 +114,12 @@ class ClientGUI(QWidget):
         add_contact(self.username) # Add self to contacts (for internal chat logic)
 
         self.setWindowTitle(f"💬 Messenger - {self.username}")
-        self.setGeometry(950, 100, 900, 650) # Wider window
+        self.setGeometry(950, 100, 900, 700) # Increased height for better spacing
 
         self.current_chat_partner = None # The contact whose chat is currently open
 
-        # --- FIX: Initialize client_socket and client_thread BEFORE init_ui() ---
         self.client_socket = None
         self.client_thread = None
-        # --- END FIX ---
 
         self.init_ui() # Now, when init_ui is called, these attributes exist
 
@@ -155,12 +154,12 @@ class ClientGUI(QWidget):
         left_panel_layout.setSpacing(0)
         left_panel_widget.setLayout(left_panel_layout)
         left_panel_widget.setFixedWidth(280) # Fixed width for contacts
-        left_panel_widget.setStyleSheet("background-color: #f2f2f2; border-right: 1px solid #e0e0e0;")
+        left_panel_widget.setStyleSheet("background-color: #F8F9FA; border-right: 1px solid #E0E0E0;")
 
         self.contacts_header = QLabel("Chats")
-        self.contacts_header.setFont(QFont("Segoe UI", 15, QFont.Bold))
+        self.contacts_header.setFont(QFont("Segoe UI", 16, QFont.Bold))
         self.contacts_header.setAlignment(Qt.AlignCenter)
-        self.contacts_header.setStyleSheet("padding: 15px; background-color: #e6e6e6; border-bottom: 1px solid #d0d0d0;")
+        self.contacts_header.setStyleSheet("padding: 20px; background-color: #E9ECEF; border-bottom: 1px solid #D1D5DA; color: #343A40;")
         left_panel_layout.addWidget(self.contacts_header)
 
         self.contact_list_widget = QListWidget()
@@ -168,37 +167,38 @@ class ClientGUI(QWidget):
         self.contact_list_widget.setStyleSheet("""
             QListWidget {
                 border: none;
-                background-color: #f8f8f8;
+                background-color: #F8F9FA;
             }
             QListWidget::item {
-                padding: 12px 15px;
-                border-bottom: 1px solid #ebebeb;
+                padding: 15px 20px;
+                border-bottom: 1px solid #E5E5E5;
+                color: #343A40;
             }
             QListWidget::item:selected {
-                background-color: #e0e0e0;
-                color: #333;
+                background-color: #E0E7FF;
+                color: #000000;
+                font-weight: bold;
             }
             QListWidget::item:hover:!selected {
-                background-color: #f0f0f0;
+                background-color: #EFF2F5;
             }
         """)
         self.contact_list_widget.itemClicked.connect(self.load_chat)
         left_panel_layout.addWidget(self.contact_list_widget)
 
-        self.add_contact_button = QPushButton("+ Add Contact")
+        self.add_contact_button = QPushButton("➕ Add Contact")
         self.add_contact_button.setFont(QFont("Segoe UI", 11, QFont.Bold))
         self.add_contact_button.setStyleSheet("""
             QPushButton {
-                background-color: #4CAF50; /* Green */
+                background-color: #007bff;
                 color: white;
                 border: none;
-                padding: 10px;
-                border-radius: 5px;
-                margin: 10px;
+                padding: 12px 15px;
+                border-radius: 8px;
+                margin: 15px;
             }
-            QPushButton:hover {
-                background-color: #45a049;
-            }
+            QPushButton:hover { background-color: #0056b3; }
+            QPushButton:pressed { background-color: #00408C; }
         """)
         self.add_contact_button.clicked.connect(self.show_add_contact_dialog)
         left_panel_layout.addWidget(self.add_contact_button)
@@ -211,22 +211,24 @@ class ClientGUI(QWidget):
         right_panel_layout.setContentsMargins(0, 0, 0, 0)
         right_panel_layout.setSpacing(0)
         right_panel_widget.setLayout(right_panel_layout)
-        right_panel_widget.setStyleSheet("background-color: #ffffff;") # White background for chat area
+        right_panel_widget.setStyleSheet("background-color: #FFFFFF;")
 
         self.chat_partner_header = QLabel("Select a chat to begin")
-        self.chat_partner_header.setFont(QFont("Segoe UI", 14, QFont.Bold))
+        self.chat_partner_header.setFont(QFont("Segoe UI", 16, QFont.Bold))
         self.chat_partner_header.setAlignment(Qt.AlignCenter)
-        self.chat_partner_header.setStyleSheet("padding: 15px; background-color: #e6e6e6; border-bottom: 1px solid #d0d0d0;")
+        self.chat_partner_header.setStyleSheet("padding: 20px; background-color: #E9ECEF; border-bottom: 1px solid #D1D5DA; color: #343A40;")
         right_panel_layout.addWidget(self.chat_partner_header)
 
         self.chat_display = QTextEdit()
         self.chat_display.setReadOnly(True)
-        self.chat_display.setFont(QFont("Segoe UI", 10))
+        # Changed 10.5 to 11 (integer) for QFont
+        self.chat_display.setFont(QFont("Segoe UI", 11)) 
         self.chat_display.setStyleSheet("""
             QTextEdit {
-                background-color: #fdfdfd; /* Lighter background */
+                background-color: #FDFDFD;
                 border: none;
                 padding: 15px;
+                color: #343A40;
             }
         """)
         right_panel_layout.addWidget(self.chat_display)
@@ -242,10 +244,15 @@ class ClientGUI(QWidget):
         self.message_input.returnPressed.connect(self.send_message)
         self.message_input.setStyleSheet("""
             QLineEdit {
-                border: 1px solid #ccc;
-                border-radius: 20px;
-                padding: 8px 15px;
+                border: 1px solid #D1D5DA;
+                border-radius: 22px;
+                padding: 10px 18px;
                 background-color: white;
+                color: #343A40;
+            }
+            QLineEdit:focus {
+                border: 1px solid #007bff;
+                outline: none;
             }
         """)
         input_layout.addWidget(self.message_input)
@@ -253,79 +260,83 @@ class ClientGUI(QWidget):
         self.send_button = QPushButton("Send")
         self.send_button.setFont(QFont("Segoe UI", 11, QFont.Bold))
         self.send_button.clicked.connect(self.send_message)
-        self.send_button.setFixedSize(80, 40)
+        self.send_button.setFixedSize(85, 44)
         self.send_button.setStyleSheet("""
             QPushButton {
-                background-color: #007bff; /* Blue */
+                background-color: #007bff;
                 color: white;
                 border: none;
-                border-radius: 20px;
+                border-radius: 22px;
             }
-            QPushButton:hover {
-                background-color: #0056b3;
-            }
+            QPushButton:hover { background-color: #0056b3; }
+            QPushButton:pressed { background-color: #00408C; }
             QPushButton:disabled {
-                background-color: #cccccc;
-                color: #666666;
+                background-color: #E0E0E0;
+                color: #A0A0A0;
             }
         """)
-        self.send_button.setDisabled(True) # Disabled until a chat is selected
+        self.send_button.setDisabled(True)
         input_layout.addWidget(self.send_button)
 
         right_panel_layout.addLayout(input_layout)
-        main_layout.addWidget(right_panel_widget, 1) # Right panel takes remaining space
+        main_layout.addWidget(right_panel_widget, 1)
 
         self.setLayout(main_layout)
 
-        # Define HTML/CSS styles for chat messages (not strict bubbles)
+        # Define HTML/CSS styles for plain line-by-line messages
         self.chat_display.document().setDefaultStyleSheet("""
-            body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10pt; margin: 0; padding: 0; }
-            .message-wrapper {
-                margin-bottom: 8px; /* Space between messages */
-                overflow: hidden; /* Contains floats */
-            }
-            .message-content {
-                padding: 10px 15px;
-                border-radius: 15px; /* Softer rounded corners */
-                max-width: 75%; /* Limit width */
-                word-wrap: break-word;
-                font-size: 10.5pt;
-                line-height: 1.4;
-                float: left; /* Default float for incoming */
-            }
-            .message-timestamp {
-                font-size: 8pt;
-                color: #888;
-                margin-top: 3px;
-                display: block; /* Ensures timestamp is on its own line within the content */
-                text-align: right; /* Default for timestamp within content */
-            }
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        font-size: 10.5pt;
+        margin: 0;
+        padding: 0;
+    }
 
-            .my-message .message-content {
-                background-color: #d1e7dd; /* Light green-blue */
-                float: right; /* Push to right */
-                color: #333;
-            }
-            .my-message .message-timestamp {
-                color: #666;
-            }
+    .message-wrapper {
+        display: flex;
+        margin: 10px;
+        clear: both;
+    }
 
-            .their-message .message-content {
-                background-color: #e9ecef; /* Light gray */
-                float: left; /* Push to left */
-                color: #333;
-            }
-            .their-message .message-timestamp {
-                text-align: left; /* Timestamp aligned with their message */
-            }
+    .message-wrapper.their {
+        justify-content: flex-start;
+    }
 
-            .system-message {
-                text-align: center;
-                font-style: italic;
-                color: #666;
-                margin: 15px 0;
-            }
-        """)
+    .message-wrapper.self {
+        justify-content: flex-end;
+    }
+
+    .bubble {
+        max-width: 65%;
+        padding: 10px 14px;
+        border-radius: 18px;
+        background-color: #DCF8C6; /* self */
+        color: #333;
+        font-size: 10.5pt;
+        line-height: 1.4;
+        position: relative;
+    }
+
+    .message-wrapper.their .bubble {
+        background-color: #F1F0F0;
+    }
+
+    .timestamp {
+        font-size: 8pt;
+        color: #888;
+        text-align: right;
+        margin-top: 5px;
+    }
+
+    .system-message {
+        text-align: center;
+        font-style: italic;
+        color: #666;
+        margin: 10px 0;
+        font-size: 9.5pt;
+    }
+""")
+
         self.load_contacts_from_db() # Load contacts when UI initializes
 
 
@@ -402,9 +413,19 @@ class ClientGUI(QWidget):
 
 
     def load_chat(self, item):
+        # Reset font weight for all items
+        for i in range(self.contact_list_widget.count()):
+            list_item = self.contact_list_widget.item(i)
+            font = list_item.font()
+            font.setBold(False)
+            list_item.setFont(font)
+        
+        # Set the current item to selected (which will apply bold from stylesheet)
+        self.contact_list_widget.setCurrentItem(item)
+
         self.current_chat_partner = item.text()
         self.chat_partner_header.setText(self.current_chat_partner)
-        self.chat_display.clear() # Clear previous chat
+        self.chat_display.clear()
         
         # Check if client_socket exists AND is active before enabling send button
         if self.client_socket and self.client_socket.fileno() != -1: 
@@ -500,37 +521,36 @@ class ClientGUI(QWidget):
 
     def append_chat(self, msg, sender_type, timestamp=None):
         if timestamp is None:
-            timestamp = time.strftime("%H:%M") # Get current time if not provided (for new messages)
+            timestamp = time.strftime("%H:%M")
 
-        # The key change is to ensure each message is a full self-contained block.
-        # We use a wrapper div that is always 100% width, and then use float on the inner
-        # message-content div to align it left/right.
         if sender_type == "self":
             html_msg = f"""
-            <div class="message-wrapper">
-                <div class="message-content my-message">
-                    {msg}
-                    <span class="message-timestamp">{timestamp}</span>
-                </div>
+        <div class="message-wrapper self">
+            <div class="bubble">
+                {msg}
+                <div class="timestamp">{timestamp}</div>
             </div>
-            """
+        </div>
+        """
         elif sender_type == "their":
             html_msg = f"""
-            <div class="message-wrapper">
-                <div class="message-content their-message">
-                    {msg}
-                    <span class="message-timestamp">{timestamp}</span>
-                </div>
+        <div class="message-wrapper their">
+            <div class="bubble">
+                {msg}
+                <div class="timestamp">{timestamp}</div>
             </div>
-            """
-        else: # system message
+        </div>
+        """
+        else:
             html_msg = f'<div class="system-message">{msg}</div>'
 
         self.chat_display.insertHtml(html_msg)
-        # Scroll to the bottom
+        self.chat_display.insertHtml("<br>")
         cursor = self.chat_display.textCursor()
         cursor.movePosition(QTextCursor.End)
         self.chat_display.setTextCursor(cursor)
+
+
 
     def closeEvent(self, event):
         self.close_connections()

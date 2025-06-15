@@ -10,7 +10,7 @@ from PyQt5.QtGui import QFont, QTextCursor
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QObject
 
 HOST = '0.0.0.0' # Listen on all available interfaces
-PORT = 9999
+PORT = 8000
 
 # Global dictionary to store connected clients: {username: socket_object}
 CONNECTED_CLIENTS = {}
@@ -68,7 +68,10 @@ class ClientHandler(QThread):
                     recipient = message_packet["recipient"]
                     payload = message_packet["payload"]
 
-                    self.signals.log_message.emit(f"Relaying from {sender} to {recipient}")
+                # Log the raw encrypted message for showoff
+                    compressed_preview = payload.get("compressed", "")[:60] + "..." if len(payload.get("compressed", "")) > 60 else payload.get("compressed", "");key_seed = payload.get("key_seed", "");self.signals.log_message.emit(f"Encrypted from {sender} → {recipient}:\n    Compressed: {compressed_preview}\n    Key Seed: {key_seed}")
+
+
 
                     with CLIENTS_LOCK:
                         recipient_socket = CONNECTED_CLIENTS.get(recipient)
